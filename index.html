@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>isometric-room</title>
+
+    <script src="https://kit.fontawesome.com/4d82da831b.js" crossorigin="anonymous"></script>
+  </head>
+  <body>
+
+    <div id = "landing-screen" class="landing-screen">
+
+      <span class="loading-status">Loading ...</span>
+      <button 
+        id = "start-button" 
+        class="start-button" 
+        type = "button" 
+        disabled
+      >Start</button>
+
+    </div>
+
+    <div id="app">
+
+      <div class="experience">
+        <canvas class="experience-canvas"></canvas>
+      </div>
+
+      <div id = "popup-window" class="popup-window">
+        <button id = "popup-window-button" class="exit-button" type = "button">X</button>
+        <h1 id = "popup-window-title" class="title"></h1>
+        <div id = "popup-window-content" class="content"></div>
+      </div>
+
+      <div id = "MainScreen" class="computer-screen">
+        <div class="overflow-layer">
+
+
+          <div class="main-content-container hide">
+            <div class="column-1">
+              <h1>Witch on Broomstick</h1>
+              <p>
+                Witch on Broomstick is a small side-scrolling action game developed as a personal project. Players battle enemies 
+                while trying to dodge projectiles to survive as long as possible. The project focuses on responsive controls, 
+                smooth animations, collision detection, and game state management.
+              </p>
+              <p>
+                Building this game helped me strengthen my understanding of JavaScript programming, object-oriented design, 
+                animation loops, and gameplay mechanics. It also introduced me to balancing game feel with technical implementation.
+              </p>
+            </div>
+            <div class="column-2">
+              <!-- <video 
+                id = "wob-gameplay-vid"
+                title = "Witch on Broomstick Gameplay Video" 
+                src="/textures/videos/gameplay_vid.mp4"
+                autoplay
+                loop
+                muted  
+              ></video> -->
+              <div class="tools">
+                <h2>Tools</h2>
+                <div class="tools-container">
+                  <i class="fa-brands fa-square-js js-icon"></i>
+                </div>
+              </div>  
+            </div>
+          </div>
+
+          <!-- * Icon logo for the main screen -->
+          <div class="icon-container">
+          </div>
+
+        </div>
+      </div>
+
+      <div id = "SecondaryScreen" class="secondary-screen">
+        <div class="overflow-layer">
+          <h1>Hello, I am <span class = "roboto">Long</span></h1>
+          <p class = "interests"><span class = "white">A</span> <span class = "green">finance</span> enthusiast, <span class = "yellow">freelancer</span>, and <span class = "blue">developer</span></p>
+
+          <div class="info-container">
+            <div class="info-section">
+              <i class="fa-solid fa-circle-user"></i>
+              <span>About myself</span>
+            </div>
+            <div class="info-section">
+              <i class="fa-solid fa-hand-holding-dollar"></i>
+              <span>Finance</span>
+            </div>
+            <div class="info-section">
+              <i class="fa-solid fa-computer"></i>
+              <span>Tech</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
