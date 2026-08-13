@@ -37,15 +37,6 @@ const CAMERA_INITIAL_POSITION = new THREE.Vector3(-26.29007241498762, 4.66862546
 const CAMERA_INITIAL_ROTATION = new THREE.Euler(-0.5199113382729925, -0.7079822381204657, -0.35636780396877776);
 const CONTROL_INITIAL_TARGET = new THREE.Vector3(-5.1321822142724205, -7.610562418677146, 3.00786548559473);
 
-//Old
-//-0.35876037053884646, -0.7456823841400626, -0.24913385105259214
-//-0.4597095307545901, 0.9231218063479606, -0.46240048968639164
-
-// New
-//_x: -1.4943099665686772, _y: -0.0760263668495644, _z: -0.7809239950979194
-//x: -15.009756211806867, y: -0.5693832054591179, z: 15.2059797598281
-
-
 //? ---------------------Starts add videos element to html---------------------
 //* Add video with my face to screens that has elements with "icon-container" class
 if (Array.from(iconContainersCollection).length > 0) {
@@ -308,20 +299,8 @@ const environmentLoader = new THREE.CubeTextureLoader().setPath("/textures/sky-t
 const environmentMap = environmentLoader.load( ['px.webp', 'nx.webp', 'py.webp', 'ny.webp', 'pz.webp', 'nz.webp'] );
 scene.background = environmentMap;
 
-// //* Loading video texture to put on screen
-// const placeholderVideo = document.createElement("video");
-// placeholderVideo.src = "/textures/videos/video.mp4";
-// placeholderVideo.loop = true;
-// placeholderVideo.muted = true;
-// placeholderVideo.autoplay = true;
-// placeholderVideo.play();
-
-// const pVideoTexture = new THREE.VideoTexture(placeholderVideo);
-// pVideoTexture.flipY = false;
-// pVideoTexture.colorSpace = THREE.SRGBColorSpace;
-
 //* Loading texture images
-const textureLoader = new THREE.TextureLoader();
+const textureLoader = new THREE.TextureLoader( manager );
 
 //* Loading images
 const imageMap = {
@@ -332,15 +311,15 @@ const imageMap = {
 
 const loadedImages = {};
 
-// Object.entries(imageMap).forEach(([key, map]) => {
+Object.entries(imageMap).forEach(([key, map]) => {
 
-//     textureLoader.load(map, (texture) => {
-//         texture.flipY = false;
-//         texture.colorSpace = THREE.SRGBColorSpace;
-//         loadedImages[key] = texture;
-//     });
+    textureLoader.load(map, (texture) => {
+        texture.flipY = false;
+        texture.colorSpace = THREE.SRGBColorSpace;
+        loadedImages[key] = texture;
+    });
 
-// });
+});
 
 //* Loading baked texture
 const textureMap = {
@@ -354,16 +333,16 @@ const textureMap = {
 
 const loadedTexture = {};
 
-// Object.entries(textureMap).forEach(( [key, value] ) => {
+Object.entries(textureMap).forEach(( [key, value] ) => {
 
-//     textureLoader.load( value, (texture) => {
-//         //? Adjust the texture before loading
-//         texture.flipY = false;
-//         texture.colorSpace = THREE.SRGBColorSpace;
-//         loadedTexture[key] = texture;
-//     });
+    textureLoader.load( value, (texture) => {
+        //? Adjust the texture before loading
+        texture.flipY = false;
+        texture.colorSpace = THREE.SRGBColorSpace;
+        loadedTexture[key] = texture;
+    });
 
-// });
+});
 
 //* Loading model
 const loader = new GLTFLoader( manager );
@@ -371,205 +350,205 @@ const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath("/draco/");
 loader.setDRACOLoader(dracoLoader);
 
-// loader.load("/model/model_15.glb", (glb) => {
+loader.load("/model/model_15.glb", (glb) => {
 
-//     glb.scene.traverse((children) => {
+    glb.scene.traverse((children) => {
 
-//         if (children.isMesh) {
+        if (children.isMesh) {
 
-//             let textureName;
+            let textureName;
 
-//             const checkTexture = (loadedTextureKeys, idsArray) => {
+            const checkTexture = (loadedTextureKeys, idsArray) => {
 
-//                 return loadedTextureKeys.some(texture => {
+                return loadedTextureKeys.some(texture => {
 
-//                     if (idsArray.includes(texture)) {
-//                         textureName = texture;
-//                         return true;
-//                     } else {
-//                         return false;
-//                     };
+                    if (idsArray.includes(texture)) {
+                        textureName = texture;
+                        return true;
+                    } else {
+                        return false;
+                    };
 
-//                 });
+                });
 
-//             };
+            };
 
-//             //* Check if children use material from baking (loadedTexture) or from images (loadedImages)
-//             if (checkTexture(Object.keys(loadedTexture), children.name.split("_"))) {
-//                 const material = new THREE.MeshBasicMaterial(
-//                     { map: loadedTexture[textureName] }
-//                 );
-//                 children.material = material;
-//             } else if (checkTexture(Object.keys(loadedImages), children.name.split("_"))) {
-//                 const material = new THREE.MeshBasicMaterial(
-//                     { map: loadedImages[textureName] }
-//                 );
-//                 children.material = material;
-//             };
+            //* Check if children use material from baking (loadedTexture) or from images (loadedImages)
+            if (checkTexture(Object.keys(loadedTexture), children.name.split("_"))) {
+                const material = new THREE.MeshBasicMaterial(
+                    { map: loadedTexture[textureName] }
+                );
+                children.material = material;
+            } else if (checkTexture(Object.keys(loadedImages), children.name.split("_"))) {
+                const material = new THREE.MeshBasicMaterial(
+                    { map: loadedImages[textureName] }
+                );
+                children.material = material;
+            };
 
-//             //* Add objects to raycastingObject and save scale, rotation, and location data
-//             if (children.name.includes("Raycaster")) {
+            //* Add objects to raycastingObject and save scale, rotation, and location data
+            if (children.name.includes("Raycaster")) {
 
-//                 children.userData.initialScale = new THREE.Vector3().copy(children.scale);
-//                 children.userData.initialRotation = new THREE.Euler().copy(children.rotation);
-//                 children.userData.initialPosition = new THREE.Vector3().copy(children.position);
+                children.userData.initialScale = new THREE.Vector3().copy(children.scale);
+                children.userData.initialRotation = new THREE.Euler().copy(children.rotation);
+                children.userData.initialPosition = new THREE.Vector3().copy(children.position);
 
-//                 if (children.name.includes("Hitbox")) {
-//                     const hitbox = createStaticHitbox(children);
-//                     raycastingObjects.push(hitbox);
-//                     scene.add(hitbox);
-//                 } else {
-//                     raycastingObjects.push(children);
-//                 };
+                if (children.name.includes("Hitbox")) {
+                    const hitbox = createStaticHitbox(children);
+                    raycastingObjects.push(hitbox);
+                    scene.add(hitbox);
+                } else {
+                    raycastingObjects.push(children);
+                };
             
-//             };
+            };
 
-//             //* Reducing seams when camera is far away
-//             if (children.material.map) {
-//                 children.material.map.minFilter = THREE.LinearFilter; 
-//             };
-
-
-//             //* Assign glassy materials to glass objects
-//             if (children.name.includes("Glass")) {
-
-//                 const glassMaterial = new THREE.MeshPhysicalMaterial( {
-// 					color: children.name.includes("Water") ? fishTankMaterialParams.color : 0xffffff,
-// 					metalness: fishTankMaterialParams.metalness,
-// 					roughness: fishTankMaterialParams.roughness,
-// 					ior: fishTankMaterialParams.ior,
-// 					envMapIntensity: fishTankMaterialParams.envMapIntensity,
-//                     envMap: environmentMap,
-// 					transmission: fishTankMaterialParams.transmission, // use material.transmission for glass materials
-// 					specularIntensity: fishTankMaterialParams.specularIntensity,
-// 					specularColor: fishTankMaterialParams.specularColor,
-// 					opacity: fishTankMaterialParams.opacity,
-//                     depthWrite: false,
-// 					transparent: true
-// 				} );
-
-//                 children.material = glassMaterial;
-
-//             };
-
-//             //* Save objects that animate together into global variables
-//             if (children.name.includes("FishTankGlass")) {
-//                 FishTankGlass = children;
-//             };
-
-//             if (children.name.includes("Water")) {
-//                 //* Assign water material to water in fishtank
-//                 children.material = waterMaterial;
-//                 Water = children;
-//             };
-
-//             if (children.name.includes("FishPet")) {
-//                 Fish = children;
-//             };
-
-//             if (children.name.includes("PictureFrame1")) {
-//                 PictureFrame1 = children;
-//             };
-
-//             if (children.name.includes("ShelfImage1")) {
-//                 ShelfImage1 = children;
-//             };
-
-//             if (children.name.includes("PictureFrame2")) {
-//                 PictureFrame2 = children;
-//             };
-
-//             if (children.name.includes("ShelfImage2")) {
-//                 ShelfImage2 = children;
-//             };
+            //* Reducing seams when camera is far away
+            if (children.material.map) {
+                children.material.map.minFilter = THREE.LinearFilter; 
+            };
 
 
-//             //* Add fans to array to animate later
-//             if (children.name.includes("PCFan")) {
-//                 if (children.name.includes("PCFan1") || children.name.includes("PCFan2")) {
-//                     yAxisFans.push(children);
-//                 } else {
-//                     xAxisFans.push(children);
-//                 };
-//             };
+            //* Assign glassy materials to glass objects
+            if (children.name.includes("Glass")) {
+
+                const glassMaterial = new THREE.MeshPhysicalMaterial( {
+					color: children.name.includes("Water") ? fishTankMaterialParams.color : 0xffffff,
+					metalness: fishTankMaterialParams.metalness,
+					roughness: fishTankMaterialParams.roughness,
+					ior: fishTankMaterialParams.ior,
+					envMapIntensity: fishTankMaterialParams.envMapIntensity,
+                    envMap: environmentMap,
+					transmission: fishTankMaterialParams.transmission, // use material.transmission for glass materials
+					specularIntensity: fishTankMaterialParams.specularIntensity,
+					specularColor: fishTankMaterialParams.specularColor,
+					opacity: fishTankMaterialParams.opacity,
+                    depthWrite: false,
+					transparent: true
+				} );
+
+                children.material = glassMaterial;
+
+            };
+
+            //* Save objects that animate together into global variables
+            if (children.name.includes("FishTankGlass")) {
+                FishTankGlass = children;
+            };
+
+            if (children.name.includes("Water")) {
+                //* Assign water material to water in fishtank
+                children.material = waterMaterial;
+                Water = children;
+            };
+
+            if (children.name.includes("FishPet")) {
+                Fish = children;
+            };
+
+            if (children.name.includes("PictureFrame1")) {
+                PictureFrame1 = children;
+            };
+
+            if (children.name.includes("ShelfImage1")) {
+                ShelfImage1 = children;
+            };
+
+            if (children.name.includes("PictureFrame2")) {
+                PictureFrame2 = children;
+            };
+
+            if (children.name.includes("ShelfImage2")) {
+                ShelfImage2 = children;
+            };
 
 
-//             //* Add chair to object to animate later
-//             if (children.name.includes("Chair") && children.name.includes("SpinningPart")) {
-//                 chair = children;
-//                 //? Have to redo saving initial information because chair does not have "Raycast" for its information to be saved previously
-//                 chair.userData.initialRotation = new THREE.Vector3().copy(chair.rotation);
-//                 chair.userData.initialPosition = new THREE.Vector3().copy(chair.position);
-//                 chair.userData.initialScale = new THREE.Vector3().copy(chair.scale);
-//             };
-//             //* Hide clicking hitbox for chair
-//             if (children.name.includes("Chair") && children.name.includes("Hitbox")) {
-//                 children.material.opacity = 0;
-//                 children.material.visible = false;
-//                 children.material.transparent = true;
-//             };
+            //* Add fans to array to animate later
+            if (children.name.includes("PCFan")) {
+                if (children.name.includes("PCFan1") || children.name.includes("PCFan2")) {
+                    yAxisFans.push(children);
+                } else {
+                    xAxisFans.push(children);
+                };
+            };
 
 
-//             //* Take out and save computer screen objects to use for adding css3DObjects later
-//             if (children.name.includes("Screen")) {
+            //* Add chair to object to animate later
+            if (children.name.includes("Chair") && children.name.includes("SpinningPart")) {
+                chair = children;
+                //? Have to redo saving initial information because chair does not have "Raycast" for its information to be saved previously
+                chair.userData.initialRotation = new THREE.Vector3().copy(chair.rotation);
+                chair.userData.initialPosition = new THREE.Vector3().copy(chair.position);
+                chair.userData.initialScale = new THREE.Vector3().copy(chair.scale);
+            };
+            //* Hide clicking hitbox for chair
+            if (children.name.includes("Chair") && children.name.includes("Hitbox")) {
+                children.material.opacity = 0;
+                children.material.visible = false;
+                children.material.transparent = true;
+            };
+
+
+            //* Take out and save computer screen objects to use for adding css3DObjects later
+            if (children.name.includes("Screen")) {
                 
-//                 Object.keys(screens).forEach( (screen) => {
-//                     if (children.name.includes(screen)) {
-//                         screens[screen].blenderScreen = children;
-//                     };
-//                 });
+                Object.keys(screens).forEach( (screen) => {
+                    if (children.name.includes(screen)) {
+                        screens[screen].blenderScreen = children;
+                    };
+                });
 
-//             };
+            };
 
-//             //* Assign white material to PosterBase because forgot to bake it in Blender
-//             if (children.name.includes("PosterBase")) {
+            //* Assign white material to PosterBase because forgot to bake it in Blender
+            if (children.name.includes("PosterBase")) {
 
-//                 children.material = basePosterMaterial;
+                children.material = basePosterMaterial;
 
-//             };
+            };
 
 
-//             if (children.name.includes("Animate")) {
+            if (children.name.includes("Animate")) {
 
-//                 children.scale.set(0, 0, 0);
+                children.scale.set(0, 0, 0);
 
-//                 if (introAnimatedObjects.length === 0) {
-//                     introAnimatedObjects.push(children);
-//                 } else {
-//                     let index = 0;
-//                     const currentChildrenOrder = Number(children.name.match(/\d+$/));
+                if (introAnimatedObjects.length === 0) {
+                    introAnimatedObjects.push(children);
+                } else {
+                    let index = 0;
+                    const currentChildrenOrder = Number(children.name.match(/\d+$/));
                     
-//                     introAnimatedObjects.some((object) => {
-//                         const objectOrder = Number(object.name.match(/\d+$/));
-//                         if (currentChildrenOrder > objectOrder) {
-//                             index++;
-//                             return false;
-//                         } else {
-//                             return true;
-//                         };
-//                     });
+                    introAnimatedObjects.some((object) => {
+                        const objectOrder = Number(object.name.match(/\d+$/));
+                        if (currentChildrenOrder > objectOrder) {
+                            index++;
+                            return false;
+                        } else {
+                            return true;
+                        };
+                    });
 
-//                     introAnimatedObjects.splice(index, 0, children);
-//                 };
+                    introAnimatedObjects.splice(index, 0, children);
+                };
 
-//             };
+            };
 
 
-//         };
-//     });
+        };
+    });
 
-//     scene.add( glb.scene );
+    scene.add( glb.scene );
 
-//     animateFan();
-//     animateChair();
-//     addHTMLScreensTo3dScreens();
-//     pairObjectsThatAnimateTogether();
+    animateFan();
+    animateChair();
+    addHTMLScreensTo3dScreens();
+    pairObjectsThatAnimateTogether();
 
-// }, undefined, (error) => {
+}, undefined, (error) => {
 
-//     console.log(error);
+    console.log(error);
 
-// });
+});
 
 const addHTMLScreensTo3dScreens = () => {
 
@@ -592,235 +571,6 @@ const addHTMLScreensTo3dScreens = () => {
 
 };
 
-const loadAssets = async () => {
-
-    //* Loading images
-    Object.entries(imageMap).forEach( async ([key, map]) => {
-
-        await textureLoader.load(map, (texture) => {
-            texture.flipY = false;
-            texture.colorSpace = THREE.SRGBColorSpace;
-            loadedImages[key] = texture;
-        });
-
-    });
-
-    //* Loading baked textures
-    Object.entries(textureMap).forEach( async ( [key, value] ) => {
-
-        await textureLoader.load( value, (texture) => {
-            //? Adjust the texture before loading
-            texture.flipY = false;
-            texture.colorSpace = THREE.SRGBColorSpace;
-            loadedTexture[key] = texture;
-        });
-
-    });
-
-
-    //* Loading model
-    await loader.load("/model/model_15.glb", (glb) => {
-
-        glb.scene.traverse((children) => {
-
-            if (children.isMesh) {
-
-                let textureName;
-
-                const checkTexture = (loadedTextureKeys, idsArray) => {
-
-                    return loadedTextureKeys.some(texture => {
-
-                        if (idsArray.includes(texture)) {
-                            textureName = texture;
-                            return true;
-                        } else {
-                            return false;
-                        };
-
-                    });
-
-                };
-
-                //* Check if children use material from baking (loadedTexture) or from images (loadedImages)
-                if (checkTexture(Object.keys(loadedTexture), children.name.split("_"))) {
-                    const material = new THREE.MeshBasicMaterial(
-                        { map: loadedTexture[textureName] }
-                    );
-                    children.material = material;
-                } else if (checkTexture(Object.keys(loadedImages), children.name.split("_"))) {
-                    const material = new THREE.MeshBasicMaterial(
-                        { map: loadedImages[textureName] }
-                    );
-                    children.material = material;
-                };
-
-                //* Add objects to raycastingObject and save scale, rotation, and location data
-                if (children.name.includes("Raycaster")) {
-
-                    children.userData.initialScale = new THREE.Vector3().copy(children.scale);
-                    children.userData.initialRotation = new THREE.Euler().copy(children.rotation);
-                    children.userData.initialPosition = new THREE.Vector3().copy(children.position);
-
-                    if (children.name.includes("Hitbox")) {
-                        const hitbox = createStaticHitbox(children);
-                        raycastingObjects.push(hitbox);
-                        scene.add(hitbox);
-                    } else {
-                        raycastingObjects.push(children);
-                    };
-                
-                };
-
-                //* Reducing seams when camera is far away
-                if (children.material.map) {
-                    children.material.map.minFilter = THREE.LinearFilter; 
-                };
-
-
-                //* Assign glassy materials to glass objects
-                if (children.name.includes("Glass")) {
-
-                    const glassMaterial = new THREE.MeshPhysicalMaterial( {
-                        color: children.name.includes("Water") ? fishTankMaterialParams.color : 0xffffff,
-                        metalness: fishTankMaterialParams.metalness,
-                        roughness: fishTankMaterialParams.roughness,
-                        ior: fishTankMaterialParams.ior,
-                        envMapIntensity: fishTankMaterialParams.envMapIntensity,
-                        envMap: environmentMap,
-                        transmission: fishTankMaterialParams.transmission, // use material.transmission for glass materials
-                        specularIntensity: fishTankMaterialParams.specularIntensity,
-                        specularColor: fishTankMaterialParams.specularColor,
-                        opacity: fishTankMaterialParams.opacity,
-                        depthWrite: false,
-                        transparent: true
-                    } );
-
-                    children.material = glassMaterial;
-
-                };
-
-                //* Save objects that animate together into global variables
-                if (children.name.includes("FishTankGlass")) {
-                    FishTankGlass = children;
-                };
-
-                if (children.name.includes("Water")) {
-                    //* Assign water material to water in fishtank
-                    children.material = waterMaterial;
-                    Water = children;
-                };
-
-                if (children.name.includes("FishPet")) {
-                    Fish = children;
-                };
-
-                if (children.name.includes("PictureFrame1")) {
-                    PictureFrame1 = children;
-                };
-
-                if (children.name.includes("ShelfImage1")) {
-                    ShelfImage1 = children;
-                };
-
-                if (children.name.includes("PictureFrame2")) {
-                    PictureFrame2 = children;
-                };
-
-                if (children.name.includes("ShelfImage2")) {
-                    ShelfImage2 = children;
-                };
-
-
-                //* Add fans to array to animate later
-                if (children.name.includes("PCFan")) {
-                    if (children.name.includes("PCFan1") || children.name.includes("PCFan2")) {
-                        yAxisFans.push(children);
-                    } else {
-                        xAxisFans.push(children);
-                    };
-                };
-
-
-                //* Add chair to object to animate later
-                if (children.name.includes("Chair") && children.name.includes("SpinningPart")) {
-                    chair = children;
-                    //? Have to redo saving initial information because chair does not have "Raycast" for its information to be saved previously
-                    chair.userData.initialRotation = new THREE.Vector3().copy(chair.rotation);
-                    chair.userData.initialPosition = new THREE.Vector3().copy(chair.position);
-                    chair.userData.initialScale = new THREE.Vector3().copy(chair.scale);
-                };
-                //* Hide clicking hitbox for chair
-                if (children.name.includes("Chair") && children.name.includes("Hitbox")) {
-                    children.material.opacity = 0;
-                    children.material.visible = false;
-                    children.material.transparent = true;
-                };
-
-
-                //* Take out and save computer screen objects to use for adding css3DObjects later
-                if (children.name.includes("Screen")) {
-                    
-                    Object.keys(screens).forEach( (screen) => {
-                        if (children.name.includes(screen)) {
-                            screens[screen].blenderScreen = children;
-                        };
-                    });
-
-                };
-
-                //* Assign white material to PosterBase because forgot to bake it in Blender
-                if (children.name.includes("PosterBase")) {
-
-                    children.material = basePosterMaterial;
-
-                };
-
-
-                if (children.name.includes("Animate")) {
-
-                    children.scale.set(0, 0, 0);
-
-                    if (introAnimatedObjects.length === 0) {
-                        introAnimatedObjects.push(children);
-                    } else {
-                        let index = 0;
-                        const currentChildrenOrder = Number(children.name.match(/\d+$/));
-                        
-                        introAnimatedObjects.some((object) => {
-                            const objectOrder = Number(object.name.match(/\d+$/));
-                            if (currentChildrenOrder > objectOrder) {
-                                index++;
-                                return false;
-                            } else {
-                                return true;
-                            };
-                        });
-
-                        introAnimatedObjects.splice(index, 0, children);
-                    };
-
-                };
-
-
-            };
-        });
-
-        scene.add( glb.scene );
-
-        animateFan();
-        animateChair();
-        addHTMLScreensTo3dScreens();
-        pairObjectsThatAnimateTogether();
-
-    }, undefined, (error) => {
-
-        console.log(error);
-
-    });
-
-};
-loadAssets();
 
 //! ---------------------Loader ends here---------------------
 
@@ -1053,43 +803,6 @@ const animateSpinningChairOnClick = () => {
 
 };
 
-
-let openingTimeline;
-let closingTimeline;
-
-// const showPopupWindow = (title, content) => {
-
-//     if (closingTimeline?.isActive()) return;
-
-//     popupWindowTitle.textContent = title;
-//     popupWindowContent.textContent = content;
-//     popupWindow.style.display = "block";
-
-//     openingTimeline = gsap.timeline();
-//     gsap.set(popupWindow, { opacity: 0 } );
-
-//     openingTimeline.to(popupWindow, {
-//         opacity: 1,
-//         duration: 1,
-//         ease: "power1.out"
-//     });
-
-// };
-
-// const hidePopupWindow = () => {
-
-//     if (openingTimeline?.isActive()) return;
-
-//     closingTimeline= gsap.timeline();
-//     gsap.set(popupWindow, { opacity: 1 });
-
-//     closingTimeline.to(popupWindow, {
-//         opacity: 0,
-//         duration: 1,
-//         onComplete: () => popupWindow.style.display = "none",
-//     });
-
-// };
 
 const setDefaultControl = () => {
 
@@ -1390,7 +1103,7 @@ controls.connect( rendererCSS3D.domElement );
 controls.enableDamping = true;
 controls.dampingFactor = 0.05;
 controls.target.copy(CONTROL_INITIAL_TARGET);
-// controls.enabled = false;
+controls.enabled = false;
 
 controls.addEventListener("start", () => raycastingDisabled = true);
 controls.addEventListener("end", () => raycastingDisabled = false);
@@ -1446,16 +1159,6 @@ const handleInteraction = () => {
         });
 
         
-        //* Showpopupwindow when clicks on screens or poster
-        // Object.entries(popupContent).forEach( ( [name, content] ) => {
-
-        //     if (intersectObject.name.includes(name)) {
-        //         showPopupWindow(content.title, content.content);
-        //     };
-
-        // });
-
-        
         //* Spin chair when press on chair
         if (intersectObject.name.includes("HitboxOf") && intersectObject.name.includes("Chair")) {
             animateSpinningChairOnClick();
@@ -1496,9 +1199,6 @@ const handleWindowMouseClick = () => {
 window.addEventListener("click", handleWindowMouseClick);
 
 
-// //* Close popupWindow when user clicks exit button
-// popupWindowExitButton.addEventListener("click", hidePopupWindow);
-// popupWindowExitButton.addEventListener("touchstart", hidePopupWindow);
 //! ---------------------Event listeners ends---------------------
 
 //* ----------------------------Raycasting----------------------------
