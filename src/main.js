@@ -358,12 +358,12 @@ Object.entries(textureMap).forEach(( [key, value] ) => {
 });
 
 //* Loading model
+let loadedGLB;
+
 const loader = new GLTFLoader( manager );
 const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath("/draco/");
 loader.setDRACOLoader(dracoLoader);
-
-let loadedGLB;
 
 //* Only apply texture to 3d-objects after textureLoader has completed loading the baked images
 const applyingTextureAfterLoad = (loadedGLB) => {
@@ -401,18 +401,6 @@ const applyingTextureAfterLoad = (loadedGLB) => {
                 );
                 children.material = material;
             };
-
-        };
-
-    });
-
-};
-
-loader.load("/model/model_15.glb", (glb) => {
-
-    glb.scene.traverse((children) => {
-
-        if (children.isMesh) {
 
             //* Add objects to raycastingObject and save scale, rotation, and location data
             if (children.name.includes("Raycaster")) {
@@ -557,13 +545,18 @@ loader.load("/model/model_15.glb", (glb) => {
                     });
 
                     introAnimatedObjects.splice(index, 0, children);
+
                 };
 
             };
 
-
         };
+
     });
+
+};
+
+loader.load("/model/model_15.glb", (glb) => {
 
     loadedGLB = glb;
 
