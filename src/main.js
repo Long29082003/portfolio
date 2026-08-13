@@ -94,6 +94,19 @@ app.appendChild( rendererCSS3D.domElement );
 const manager = new THREE.LoadingManager();
 manager.onLoad = () => {
 
+    //* Apply background after CubeTextureLoader finish loading
+    scene.background = environmentMap;
+
+    //* Only apply baked texture to object after baked texture have been loaded completely thanks to loadingManager
+    applyingTextureAfterLoad(loadedGLB);
+
+    scene.add(loadedGLB.scene);
+
+    animateFan();
+    animateChair();
+    addHTMLScreensTo3dScreens();
+    pairObjectsThatAnimateTogether();
+
     landingScreen.classList.add("loaded");
 
     loadingStatusText.classList.add("enabled");
@@ -295,9 +308,9 @@ for (let i = 1; i < 25; i++) {
 
 //? ---------------------Loaders start---------------------
 //* Loading cube texture for reflection and background
-const environmentLoader = new THREE.CubeTextureLoader().setPath("/textures/sky-textures/");
+const environmentLoader = new THREE.CubeTextureLoader( manager ).setPath("/textures/sky-textures/");
 const environmentMap = environmentLoader.load( ['px.webp', 'nx.webp', 'py.webp', 'ny.webp', 'pz.webp', 'nz.webp'] );
-scene.background = environmentMap;
+
 
 //* Loading texture images
 const textureLoader = new THREE.TextureLoader( manager );
@@ -350,9 +363,12 @@ const dracoLoader = new DRACOLoader();
 dracoLoader.setDecoderPath("/draco/");
 loader.setDRACOLoader(dracoLoader);
 
-loader.load("/model/model_15.glb", (glb) => {
+let loadedGLB;
 
-    glb.scene.traverse((children) => {
+//* Only apply texture to 3d-objects after textureLoader has completed loading the baked images
+const applyingTextureAfterLoad = (loadedGLB) => {
+
+    loadedGLB.scene.traverse((children) => {
 
         if (children.isMesh) {
 
@@ -385,6 +401,18 @@ loader.load("/model/model_15.glb", (glb) => {
                 );
                 children.material = material;
             };
+
+        };
+
+    });
+
+};
+
+loader.load("/model/model_15.glb", (glb) => {
+
+    glb.scene.traverse((children) => {
+
+        if (children.isMesh) {
 
             //* Add objects to raycastingObject and save scale, rotation, and location data
             if (children.name.includes("Raycaster")) {
@@ -537,12 +565,7 @@ loader.load("/model/model_15.glb", (glb) => {
         };
     });
 
-    scene.add( glb.scene );
-
-    animateFan();
-    animateChair();
-    addHTMLScreensTo3dScreens();
-    pairObjectsThatAnimateTogether();
+    loadedGLB = glb;
 
 }, undefined, (error) => {
 
