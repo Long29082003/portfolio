@@ -43,7 +43,7 @@ if (Array.from(iconContainersCollection).length > 0) {
 
     Array.from(iconContainersCollection).forEach((iconContainer) => {
         const iconVideo = document.createElement("video");
-        iconVideo.src = "/textures/videos/icon_vid.mkv";
+        iconVideo.src = "/textures/videos/icon_vid.mp4";
         iconVideo.classList.add("icon-vid");
         iconVideo.muted = true;
         iconVideo.autoplay = true;
@@ -524,6 +524,7 @@ const applyingTextureAfterLoad = (loadedGLB) => {
             };
 
 
+            //* If name includes Animate, then save them to an array to use gsap to animate them later
             if (children.name.includes("Animate")) {
 
                 children.scale.set(0, 0, 0);
@@ -1150,6 +1151,7 @@ const handleStartButtonClick = () => {
 
 };
 startButton.addEventListener("click", handleStartButtonClick);
+startButton.addEventListener("touchend", handleStartButtonClick);
 
 
 //* Handle interaction. Used in touch and click eventlistener below
