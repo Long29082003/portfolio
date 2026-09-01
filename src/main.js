@@ -111,7 +111,7 @@ manager.onLoad = () => {
 
     loadingStatusText.classList.add("enabled");
     loadingStatusText.style.fontFamily = "Playwrite GB S, sans-serif";
-    loadingStatusText.textContent = "Welcome";
+    loadingStatusText.textContent = "Welcome, I'm Long";
 
     startButton.disabled = false;
 
@@ -644,8 +644,6 @@ const animateSpanningIntroCameraIn = () => {
         controls.enabled = true;
         setControlRestriction();
         raycastingDisabled = false;
-
-        animateObjectsIntroAnimation();
     }});;
 
     tl.to(camera.position, {
@@ -710,7 +708,7 @@ const animateObjectsIntroAnimation = () => {
                 z: objectOriginalScale.z,
                 ease: "bounce.out",
                 duration: 0.5,
-            }, "-=0.3");
+            }, "-=0.4");
         });
 
         
@@ -726,7 +724,7 @@ const animateObjectsIntroAnimation = () => {
                 z: objectOriginalScale.z,
                 ease: "bounce.out",
                 duration: 0.65,
-            }, "-=0.4");
+            }, "-=0.6");
         });
 
 
@@ -742,7 +740,7 @@ const animateObjectsIntroAnimation = () => {
                 z: objectOriginalScale.z,
                 ease: "bounce.out",
                 duration: 0.35,
-            }, "-=0.25");
+            }, "-=0.3");
         });
 
     };
@@ -1148,6 +1146,8 @@ const handleStartButtonClick = () => {
 
     animateOpenApp();
     animateSpanningIntroCameraIn();
+
+    setTimeout(() => animateObjectsIntroAnimation(), 1400);
 
 };
 startButton.addEventListener("click", handleStartButtonClick);
